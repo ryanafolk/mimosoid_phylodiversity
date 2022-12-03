@@ -1,0 +1,84 @@
+---
+title: "Mimosoid Phylodiversity"
+author: "Michael W Belitz"
+date: '2022-09-16'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(terra)
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+world <- rnaturalearth::ne_countries(returnclass = "sf") %>% 
+  st_transform("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
+```
+
+### IN BASH
+# gdalwarp -s_srs "+proj=moll +lon_0=1 +datum=WGS84 +units=m +no_defs" -t_srs ESRI:54030 spatial__CHAO2_ESTIMATE.tif spatial__CHAO2_ESTIMATE.robinson.tif
+# gdalwarp -s_srs "+proj=moll +lon_0=1 +datum=WGS84 +units=m +no_defs" -t_srs ESRI:54030 rand__PE_CWE.tif rand__PE_CWE.robinson.tif
+# gdalwarp -s_srs "+proj=moll +lon_0=1 +datum=WGS84 +units=m +no_defs" -t_srs ESRI:54030 rand__PHYLO_RPE_NULL2.tif rand__PHYLO_RPE_NULL2.robinson.tif
+# gdalwarp -s_srs "+proj=moll +lon_0=1 +datum=WGS84 +units=m +no_defs" -t_srs ESRI:54030 rand__PHYLO_RPE2.tif rand__PHYLO_RPE2.robinson.tif
+
+
+
+
+## CANAPE
+
+```{r canape, echo=F, fig.width=8, fig.height=2.5, message=F, warning=FALSE}
+xx <- rast("mimosoidBiodiverse/rand__PE_CWE.robinson.tif")
+xx_df <- terra::as.data.frame(xx, xy = TRUE) %>% 
+  dplyr::rename(PE_WE_P = 3)
+
+yy <- rast("mimosoidBiodiverse/rand__PHYLO_RPE_NULL2.robinson.tif")
+yy_df <- terra::as.data.frame(yy, xy = TRUE) %>% 
+  dplyr::rename(RPE_NULL2 = 3)
+
+zz <- rast("mimosoidBiodiverse/rand__PHYLO_RPE2.robinson.tif")
+zz_df <- terra::as.data.frame(zz, xy = TRUE) %>% 
+  dplyr::rename(RPE2 = 3)
+
+
+significance_fun <- function(x, y, z){
+  #  simplify the logic below
+  ifelse(test = is.na(x), yes = 0, no = x)
+  ifelse(test = is.na(y), yes = 0, no = x)
+  ifelse(test = is.na(z), yes = 0.5, no = x)
+  
+  ifelse(test = x <= 0.95 & y <= 0.95, yes = "Not Sig",
+         no = 
+           ifelse(z < 0.025, yes = "Neo",
+                  no = 
+                    ifelse(z > 0.975, yes = "Paleo",
+                           no = "Mixed")
+           ))
+}
+
+Significance <- significance_fun(x = xx_df$PE_WE_P, 
+                                 y = yy_df$RPE_NULL2, 
+                                 z = zz_df$RPE2)
+
+df2 <- left_join(xx_df, yy_df) 
+df2 <- left_join(df2, zz_df)
+
+df3 <- df2 %>% 
+  mutate(PE_WE_P = tidyr::replace_na(PE_WE_P, 0),
+         RPE_NULL2 = tidyr::replace_na(RPE_NULL2, 0),
+         RPE2 = tidyr::replace_na(RPE2, 0.5)) 
+
+Significance <- significance_fun(x = df3$PE_WE_P, y = df3$RPE_NULL2,
+                                 z = df3$RPE2)
+
+canape_csv <- cbind(df3, Significance) %>% 
+  dplyr::select(x, y, Significance)
+
+
+ggplot() + 
+  geom_sf(world, mapping = aes(), fill = NA, color = "grey25") +
+  geom_tile(canape_csv, mapping = aes(x = x, y = y, fill = Significance)) + 
+  scale_fill_manual(values = c("#CB7FFF", "red", "transparent", "royalblue1")) +
+    coord_sf() +
+  theme_void()
+```
