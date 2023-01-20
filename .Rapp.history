@@ -1,0 +1,890 @@
+library(dplyr)#
+library(readr)#
+# Load environmental data; choosing PD as the most high resolution reported variable#
+env <- list.files(path="./climate_data/spatial_data_climate/PD_P_50km", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows #
+env <- data.frame(env)#
+env[env == -9999] <- NA#
+env$x <- round(env$x, digit = 1)#
+env$y <- round(env$y, digit = 1)#
+env %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env#
+env <- as.data.frame(env)
+list.files
+env
+env <- list.files(path="./environmental_data/RPD_20km", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows
+env
+env <- list.files(path="./environmental_data/*RPD_20km", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows
+env
+list.files(path="./environmental_data/", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows
+list.files(path="./environmental_data/", pattern = "RPD", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows
+list.files(path="./environmental_data/", pattern = "RPD", full.names = TRUE)
+list.files(path="./environmental_data/", full.names = TRUE)
+list.files(path="./environmental_data/", pattern = "richness", full.names = TRUE)
+list.files(env <- list.files(path="./environmental_data/", pattern = "richness", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows #
+)
+EP, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_1, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_10, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_11, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_12, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_13, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_14, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_15, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_16, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_17, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_18, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_19, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_2, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_3, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_4, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_5, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_6, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_7, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_8, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_9, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): GTOPO30_ASPECT_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): GTOPO30_ELEVATION, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): GTOPO30_SLOPE_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_bulkdensity_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_claypercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_coarsefragmentpercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_nitrogen_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_phx10percent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_sandpercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_siltpercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_1_Needleleaf, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_2_Evergreeenbroadleaf, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_3_Deciduousbroadleaf, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_4_Mixedtrees, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_5_Shrubs, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_6_Herbaceous, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): soiltype_mostprobable, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+EP, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_1, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_10, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_11, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_12, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_13, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_14, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_15, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_16, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_17, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_18, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_19, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_2, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_3, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_4, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_5, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_6, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_7, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_8, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): BIOCLIM_9, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): GTOPO30_ASPECT_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): GTOPO30_ELEVATION, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): GTOPO30_SLOPE_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_bulkdensity_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_claypercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_coarsefragmentpercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_nitrogen_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_phx10percent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_sandpercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_siltpercent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_1_Needleleaf, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_2_Evergreeenbroadleaf, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_3_Deciduousbroadleaf, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_4_Mixedtrees, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_5_Shrubs, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): LandCover_6_Herbaceous, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.#
+Rows: 122761 Columns: 3                                                                                                                                                                    #
+── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+Delimiter: ","#
+dbl (3): soiltype_mostprobable, x, y#
+#
+ℹ Use `spec()` to retrieve the full column specification for this data.#
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+env
+env <- list.files(path="./environmental_data/", pattern = "richness", full.names = TRUE)
+env
+env <- list.files(path="./environmental_data", pattern = "richness", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows
+env
+env <- data.frame(env)
+head(env)
+min(env$LandCover_4_Mixedtrees)
+env$LandCover_4_Mixedtrees[env$LandCover_4_Mixedtrees == -9999]
+env[env == -9999] <- NA
+env$x <- round(env$x, digit = 1)#
+env$y <- round(env$y, digit = 1)
+env %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env
+env <- as.data.frame(env)
+head(env)
+rand_RPD <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/rand_RPD_20km.csv")
+rand_RPD$x <- round(rand_RPD$x, digit = 1)#
+rand_RPD$y <- round(rand_RPD$y, digit = 1)#
+rand_RPD %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> rand_RPD#
+rand_RPD <- as.data.frame(rand_RPD)
+rand_RPD$RPD_significance
+rand_RPD
+head(rand_RPD)
+rand_RPD$RPD_significance <- as.factor(ifelse(rand_RPD$value < 0.05, "Low", ifelse(rand_RPD$value > 0.95, "High", "NS")))#
+rand_RPD$value <- NULL
+head(rand_RPD)
+combined <- merge(rand_RPD, env, by = c("x", "y"))
+head(combined)
+levels(combined$RPD_significance)
+RPD <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/RPD_20km.csv")
+head(RPD)
+names(RPD) <- c("x", "y", "RPD")
+RPD$x <- round(RPD$x, digit = 1)#
+RPD$y <- round(RPD$y, digit = 1)#
+RPD %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> RPD
+RPD <- as.data.frame(RPD)
+combined <- merge(combined, RPD, by = c("x", "y"))
+head(combined)
+CANAPE <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/CANAPE_20km.csv")
+names(CANAPE) <- c("x", "y", "CANAPE")#
+CANAPE$x <- round(CANAPE$x, digit = 1)#
+CANAPE$y <- round(CANAPE$y, digit = 1)#
+CANAPE %>% group_by(x, y) %>% summarize_if(is.character, max) -> CANAPE#
+CANAPE <- as.data.frame(CANAPE)#
+CANAPE$CANAPE <- as.factor(CANAPE$CANAPE)
+combined <- merge(combined, CANAPE, by = c("x", "y"))
+SR <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/riIsMenuKeyEvent: found no unichar data in event; retranslated without deadkeys to produce ''#
+IsMenuKeyEvent: found no unichar data in event; retranslated without deadkeys to produce ''#
+IsMenuKeyEvent: found no unichar data in event; retranslated without deadkeys to produce ''#
+IsMenuKeyEvent: found no unichar data in event; retranslated without deadkeys to produce ''#
+'sMenuKeyEvent: found no unichar data in event; retranslated without deadkeys to produce 'chness_20km.csv")
+SR <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/richness_20km.csv")
+names(SR) <- c("x", "y", "SR")#
+SR$x <- round(SR$x, digit = 1)#
+SR$y <- round(SR$y, digit = 1)#
+SR %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> SR#
+SR <- as.data.frame(SR)
+combined <- merge(combined, SR, by = c("x", "y"))
+head(combined)
+length(combined$x)
+combined.temp <- combined#
+combined.scaled <- rapply(combined.temp, scale, c("numeric","integer"), how="replace")#
+combined.scaled$SR <- combined$SR#
+combined.scaled <- as.data.frame(combined.scaled)#
+combined.scaled$y <- combined.temp$y#
+combined.scaled$x <- combined.temp$x
+head(combined.scaled)
+linear_model_complex <- lm(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined.scaled)
+linear_model_complex
+summary(linear_model_complex)
+library(lme4)#
+mixed_model_complex <- lmer(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
+summary(mixed_model_complex)
+linear_model_simple <- lm(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined.scaled)
+mixed_model_simple <- lmer(RPD ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
+mixed_model_noenvironment <- lmer(RPD ~ (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
+AIC(linear_model_complex)#
+AIC(linear_model_simple)#
+AIC(mixed_model_complex)#
+AIC(mixed_model_simple)#
+AIC(mixed_model_noenvironment)
+summary(mixed_model_complex)
+library(MuMIn)#
+r.squaredGLMM(mixed_model_complex)
+combined.scaled$CANAPE_significant <- combined.scaled$CANAPE#
+levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Neo"] <-"Sig"#
+levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Mixed"] <-"Sig"#
+levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Paleo"] <-"Sig"#
+levels(combined.scaled$CANAPE_significant)
+logit_complex <- glm(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, family = binomial(link='logit'), data = combined.scaled)
+summary(logit_complex)
+logit_complex <- glm(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, family = binomial(link='logit'), data = combined.scaled)#
+logit_simple <- glm(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced, family = binomial(link='logit'), data = combined.scaled)
+mixed_model_complex <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
+summary(mixed_model_complex)
+mixed_model_simple <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
+mixed_model_noenvironment <- glmer(CANAPE_significant ~ (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun = 2e5)))
+AIC(logit_complex)#
+AIC(logit_simple)#
+AIC(mixed_model_complex)#
+AIC(mixed_model_simple)#
+AIC(mixed_model_noenvironment)
+summary(mixed_model_simple)
+library(MuMIn)#
+r.squaredGLMM(mixed_model_simple)
+library(ggplot2)
+ggplot(combined, aes(x = RPD_significance, y = ISRICSOILGRIDS_new_average_phx10percent_reduced, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = aridity_index_UNEP, y = ISRICSOILGRIDS_new_average_phx10percent_reduced, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.975, na.rm = TRUE))#
+ggplot(combined, aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+AIC(mixed_model_simple)
+summary(mixed_model_simple)
+ggplot(combined, aes(x = CANAPE, y = BIOCLIM_1, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = BIOCLIM_1, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Temperature vs. ggplot(combined, aes(x = CANAPE, y = BIOCLIM_1, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))#
+", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = BIOCLIM_1, fill = CANAPE)) + geom_violin(trim=FALSE)
+ggplot(combined, aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = BIOCLIM_1, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = ISRICSOILGRIDS_new_average_nitrogen_reduced, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Nitrogen vs. CANAPE significance", x="CANAPE significance", y = "Nitrogen content") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = ISRICSOILGRIDS_new_average_phx10percent_reduced, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = ISRICSOILGRIDS_new_average_phx10percent_reduced/10, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = ISRICSOILGRIDS_new_average_phx10percent_reduced/10, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = CANAPE, y = ISRICSOILGRIDS_new_average_phx10percent_reduced/10, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="pH vs. CANAPE significance", x="CANAPE significance", y = "Soil pH") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = aridity_index_UNEP, y = RPD)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs. RPD", x="Aridity index", y = "RPD")
+head(combined)
+ggplot(combined, aes(x = aridity_index_UNEP, y = SR)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs. RPD", x="Aridity index", y = "RPD")
+ggplot(combined, aes(x = BIOCLIM_1, y = SR)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs. RPD", x="Aridity index", y = "RPD")
+ggplot(combined, aes(x = CANAPE, y = BIOCLIM_1/10, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Temperature vs. CANAPE significance", x="CANAPE significance", y = "Mean annual temperature (°C)") + ylim(quantile(combined$BIOCLIM_1/10, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1/10, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = BIOCLIM_1/10, y = SR)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs. RPD", x="Aridity index", y = "RPD")
+ggplot(combined, aes(x = y, y = RPD)) + geom_hex(bins = 30) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="RPD vs. latitude", y="RPD", x = "Latitude")
+ggplot(combined, aes(x = y, y = SR)) + geom_hex(bins = 30) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="RPD vs. latitude", y="RPD", x = "Latitude")
+ggplot(combined, aes(x = y, y = RPD)) + geom_hex(bins = 30) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="RPD vs. latitude", y="RPD", x = "Latitude")
+ggplot(combined[combined$y > 0, ], aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 0, ], aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 0, ], aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 0, ], aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 0, ], aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance, Northern Hemisphere", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 0, ], aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance, Southern Hemisphere", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 0, ], aes(x = RPD_significance, y = BIOCLIM_1, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \nRPD significance", x="RPD_significance", y = "Mean annual temperature") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 0, ], aes(x = RPD_significance, y = BIOCLIM_1, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \nRPD significance", x="RPD_significance", y = "Mean annual temperature") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 0, ], aes(x = RPD_significance, y = BIOCLIM_1, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \nRPD significance", x="RPD_significance", y = "Mean annual temperature") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = RPD_significance, y = BIOCLIM_1/10, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$BIOCLIM_1/10, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1/10, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = RPD_significance, y = ISRICSOILGRIDS_new_average_nitrogen_reduced, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Nitrogen vs. CANAPE significance", x="CANAPE significance", y = "Nitrogen content") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = RPD_significance, y = ISRICSOILGRIDS_new_average_phx10percent_reduced/10, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="pH vs. CANAPE significance", x="CANAPE significance", y = "Soil pH") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.975, na.rm = TRUE))
+ggplot(combined, aes(x = y, y = RPD)) + geom_hex(bins = 30) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="RPD vs. latitude", y="RPD", x = "Latitude")
+ggplot(combined, aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$x > 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$x < 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$x < 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$x > 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 20 && combined$y > -20, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 20 && combined$y < -20, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 20 | combined$y < -20, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y > 23.43629 | combined$y < -23.43629, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[combined$y < 23.43629 && combined$y > -23.43629, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+proportion_nodulating <- read.csv("./Fagales_CSVs_ToShare/proportion_nodulating.csv")
+proportion_nodulating <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/propNodulating_20km.csv")
+proportion_nodulating <- read.csv("./Fagales_CSVs_ToShare/proportion_nodulating.csv")
+proportion_nodulating <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/propNodulating_20km.csv")#
+names(proportion_nodulating) <- c("x", "y", "prop_nod")#
+proportion_nodulating$x <- round(proportion_nodulating$x, digit = 1)#
+proportion_nodulating$y <- round(proportion_nodulating$y, digit = 1)#
+proportion_nodulating %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> proportion_nodulating#
+proportion_nodulating <- as.data.frame(proportion_nodulating)
+proportion_nodulating <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/propNodulating_20km.csv")
+head(proportion_nodulating)
+proportion_nodulating <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/propNodulating_20km.csv")
+head(proportion_nodulating)
+proportion_nodulating$richness <- NULL
+names(proportion_nodulating) <- c("x", "y", "prop_nod")#
+proportion_nodulating$x <- round(proportion_nodulating$x, digit = 1)#
+proportion_nodulating$y <- round(proportion_nodulating$y, digit = 1)#
+proportion_nodulating %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> proportion_nodulating#
+proportion_nodulating <- as.data.frame(proportion_nodulating)
+combined <- merge(combined, proportion_nodulating, by = c("x", "y"))
+head(combined)
+length(combined$x)
+#########################
+# Load data sets#
+#########################
+#
+library(dplyr)#
+library(readr)#
+# Load environmental data; starting with species richness to ensure as many pixels are recovered as possible#
+env <- list.files(path="./environmental_data", pattern = "richness", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows #
+env <- data.frame(env)#
+env[env == -9999] <- NA#
+env$x <- round(env$x, digit = 1)#
+env$y <- round(env$y, digit = 1)#
+env %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env#
+env <- as.data.frame(env)#
+#
+# Add RPD randomizations#
+rand_RPD <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/rand_RPD_20km.csv")#
+rand_RPD$x <- round(rand_RPD$x, digit = 1)#
+rand_RPD$y <- round(rand_RPD$y, digit = 1)#
+rand_RPD %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> rand_RPD#
+rand_RPD <- as.data.frame(rand_RPD)#
+# Add significance column#
+rand_RPD$RPD_significance <- as.factor(ifelse(rand_RPD$value < 0.05, "Low", ifelse(rand_RPD$value > 0.95, "High", "NS")))#
+rand_RPD$value <- NULL#
+#
+combined <- merge(rand_RPD, env, by = c("x", "y"))#
+#
+# Add RPD#
+RPD <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/RPD_20km.csv")#
+names(RPD) <- c("x", "y", "RPD")#
+RPD$x <- round(RPD$x, digit = 1)#
+RPD$y <- round(RPD$y, digit = 1)#
+RPD %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> RPD#
+RPD <- as.data.frame(RPD)#
+#
+combined <- merge(combined, RPD, by = c("x", "y"))#
+#
+# Add CANAPE#
+CANAPE <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/CANAPE_20km.csv")#
+names(CANAPE) <- c("x", "y", "CANAPE")#
+CANAPE$x <- round(CANAPE$x, digit = 1)#
+CANAPE$y <- round(CANAPE$y, digit = 1)#
+CANAPE %>% group_by(x, y) %>% summarize_if(is.character, max) -> CANAPE#
+CANAPE <- as.data.frame(CANAPE)#
+CANAPE$CANAPE <- as.factor(CANAPE$CANAPE)#
+#
+combined <- merge(combined, CANAPE, by = c("x", "y"))#
+#
+## Add SR#
+SR <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/richness_20km.csv")#
+names(SR) <- c("x", "y", "SR")#
+SR$x <- round(SR$x, digit = 1)#
+SR$y <- round(SR$y, digit = 1)#
+SR %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> SR#
+SR <- as.data.frame(SR)#
+#
+combined <- merge(combined, SR, by = c("x", "y"))#
+#
+# Normalize entire data frame#
+combined.temp <- combined#
+combined.scaled <- rapply(combined.temp, scale, c("numeric","integer"), how="replace")#
+combined.scaled$SR <- combined$SR#
+combined.scaled <- as.data.frame(combined.scaled)#
+combined.scaled$y <- combined.temp$y#
+combined.scaled$x <- combined.temp$x
+ggplot(combined, aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+proportion_nodulating <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/propNodulating_20km.csv")#
+proportion_nodulating$richness <- NULL#
+names(proportion_nodulating) <- c("x", "y", "prop_nod")#
+proportion_nodulating$x <- round(proportion_nodulating$x, digit = 1)#
+proportion_nodulating$y <- round(proportion_nodulating$y, digit = 1)#
+proportion_nodulating %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> proportion_nodulating#
+proportion_nodulating <- as.data.frame(proportion_nodulating)
+combined_nod <- merge(combined, proportion_nodulating, by = c("x", "y"))
+combined_nod.temp <- combined_nod#
+combined_nod.scaled <- rapply(combined_nod.temp, scale, c("numeric","integer"), how="replace")#
+combined_nod.scaled$SR <- combined_nod$SR#
+combined_nod.scaled <- as.data.frame(combined_nod.scaled)#
+combined_nod.scaled$y <- combined_nod.temp$y#
+combined_nod.scaled$x <- combined_nod.temp$x
+head(combined_nod)
+linear_model_complex <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
+summary(linear_model_complex)
+linear_model_simple <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced, data = combined_nod.scaled)
+library(lme4)#
+mixed_model_complex <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+summary(mixed_model_complex)
+mixed_model_simple <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+mixed_model_noenvironment <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+AIC(linear_model_complex)#
+AIC(linear_model_simple)#
+AIC(mixed_model_complex)#
+AIC(mixed_model_simple)#
+AIC(mixed_model_noenvironment)#
+# Complex mixed model favored
+summary(mixed_model_simple)
+library(MuMIn)#
+r.squaredGLMM(mixed_model_simple)
+summary(lm(prop_nod ~ aridity_index_UNEP, data = combined_nod[combined_nod$y > 0, ]))
+summary(lm(prop_nod ~ aridity_index_UNEP, data = combined_nod[combined_nod$y < 0, ]))
+library(ggplot2)#
+ggplot(combined_nod[combined_nod$prop_nod > 0,], aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0, 0.9999) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod[combined_nod$prop_nod > 0,], aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 48) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0, 0.9999) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod[combined_nod$prop_nod > 0,], aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 48) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod[combined_nod$prop_nod > 0,], aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+length(combined_nod$x)
+ggplot(combined_nod[combined_nod$prop_nod > 0 & combined_nod$y < 0,], aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 25) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0, 0.9999) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating,\nSouthern Hemisphere", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod[combined_nod$prop_nod > 0,], aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+combined_nod$y
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x*x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x^2) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod[combined_nod$prop_nod < 0,], aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+mixed_model_simple
+ggplot(combined_nod, aes(x = BIOCLIM_12, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_12, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_12, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_17, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_17, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_17, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_17, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_17, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_17, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Carbon vs.\nproportion nodulating", x="Carbon content", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 25) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Carbon vs.\nproportion nodulating", x="Carbon content", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 25) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Carbon vs.\nproportion nodulating", x="Carbon content", y = "Proportion nodulating")
+combined_nod$non_nod <- as.factor(ifelse(combined_nod$prop_nod < 1, "Present", "Absent"))
+head(combined_nod)
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = nod_category, y = aridity_index_UNEP, fill = nod_category)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nNorthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nNorthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod, aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nNorthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nNorthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod, aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(nod_rpd[nod_rpd$y > 0, ], aes(x = CANAPE, y = prop_nod, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(0, 0.5)
+ggplot(nod_rpd[combined_nod$y > 0, ], aes(x = CANAPE, y = prop_nod, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(0, 0.5)
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = CANAPE, y = prop_nod, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(0, 0.5)
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = CANAPE, y = prop_nod, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index")
+ggplot(combined_nod, aes(x = CANAPE, y = prop_nod, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index")
+ggplot(combined_nod[combined_nod$y < 0, ], aes(x = CANAPE, y = prop_nod, fill = CANAPE, ymin = 0)) + geom_violin(trim=TRUE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index")

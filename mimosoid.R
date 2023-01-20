@@ -93,6 +93,29 @@ library(MuMIn)
 r.squaredGLMM(mixed_model_complex)
 
 
+## RPD significance model -- if included need to redo the simple model variable set
+#levels(combined.scaled$RPD_significance)[levels(combined.scaled$RPD_significance)=="NS"] <- NA # NS excluded by the metrics
+## Top 5 variables in simple models chosen based on coefficients in complex logit model
+#logit_complex <- glm(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, family = binomial(link='logit'), data = combined.scaled)
+#logit_simple <- glm(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced, family = binomial(link='logit'), data = combined.scaled)
+## Be warned, these logit models will take about 5 minutes and 2.8 GB RAM.
+#mixed_model_complex <- glmer(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
+#mixed_model_simple <- glmer(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
+#mixed_model_noenvironment <- glmer(RPD_significance ~ (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun = 2e5)))
+#
+#AIC(logit_complex)
+#AIC(logit_simple)
+#AIC(mixed_model_complex)
+#AIC(mixed_model_simple)
+#AIC(mixed_model_noenvironment)
+#
+## Mixed model complex favored
+#summary(mixed_model_complex)
+#
+#library(MuMIn)
+#r.squaredGLMM(mixed_model_complex)
+
+
 
 # CANAPE significance model
 combined.scaled$CANAPE_significant <- combined.scaled$CANAPE
@@ -128,14 +151,14 @@ r.squaredGLMM(mixed_model_simple)
 ########################
 
 library(ggplot2)
-
-
+levels(combined.scaled$RPD_significance)[levels(combined.scaled$RPD_significance)=="NS"] <- NA # NS excluded by the metrics
+levels(combined$RPD_significance)[levels(combined$RPD_significance)=="NS"] <- NA # NS excluded by the metrics
 
 # Violin plots
-ggplot(combined, aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD_significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
-ggplot(combined, aes(x = RPD_significance, y = BIOCLIM_1/10, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Temperature vs. RPD significance", x="RPD_significance", y = "Mean annual temperature (°C)") + ylim(quantile(combined$BIOCLIM_1/10, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1/10, 0.975, na.rm = TRUE))
-ggplot(combined, aes(x = RPD_significance, y = ISRICSOILGRIDS_new_average_nitrogen_reduced, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Nitrogen vs. CANAPE significance", x="CANAPE significance", y = "Nitrogen content") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.975, na.rm = TRUE))
-ggplot(combined, aes(x = RPD_significance, y = ISRICSOILGRIDS_new_average_phx10percent_reduced/10, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="pH vs. CANAPE significance", x="CANAPE significance", y = "Soil pH") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.975, na.rm = TRUE))
+ggplot(combined[!is.na(combined$RPD_significance), ], aes(x = RPD_significance, y = aridity_index_UNEP, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. RPD significance", x="RPD significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined[!is.na(combined$RPD_significance), ], aes(x = RPD_significance, y = BIOCLIM_1/10, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Temperature vs. RPD significance", x="RPD significance", y = "Mean annual temperature (°C)") + ylim(quantile(combined$BIOCLIM_1/10, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1/10, 0.975, na.rm = TRUE))
+ggplot(combined[!is.na(combined$RPD_significance), ], aes(x = RPD_significance, y = ISRICSOILGRIDS_new_average_nitrogen_reduced, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Nitrogen vs. RPD significance", x="RPD significance", y = "Nitrogen content") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_nitrogen_reduced, 0.975, na.rm = TRUE))
+ggplot(combined[!is.na(combined$RPD_significance), ], aes(x = RPD_significance, y = ISRICSOILGRIDS_new_average_phx10percent_reduced/10, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="pH vs. RPD significance", x="RPD significance", y = "Soil pH") + ylim(quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.025, na.rm = TRUE), quantile(combined$ISRICSOILGRIDS_new_average_phx10percent_reduced/10, 0.975, na.rm = TRUE))
 # Only BIO1 shows clear separation
 
 ggplot(combined, aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
@@ -146,8 +169,8 @@ ggplot(combined, aes(x = CANAPE, y = ISRICSOILGRIDS_new_average_phx10percent_red
 
 # Hex plots
 # Species richness response
-ggplot(combined, aes(x = aridity_index_UNEP, y = SR)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs. RPD", x="Aridity index", y = "RPD")
-ggplot(combined, aes(x = BIOCLIM_1/10, y = SR)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs. RPD", x="Aridity index", y = "RPD")
+ggplot(combined, aes(x = aridity_index_UNEP, y = SR)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs. species richness", x="Aridity index", y = "SR")
+ggplot(combined, aes(x = BIOCLIM_1/10, y = SR)) + geom_hex(bins = 35) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Mean annual temperature (°C) vs. species richness", x="Aridity index", y = "SR")
 
 # Latitude
 ggplot(combined, aes(x = y, y = SR)) + geom_hex(bins = 30) + scale_fill_continuous(type = "viridis") + theme_bw() + geom_smooth(method='lm', formula = y ~ x) + labs(title="Species richness vs. latitude", y="Species richness", x = "Latitude")
@@ -163,12 +186,13 @@ ggplot(combined[combined$y > 0, ], aes(x = RPD_significance, y = BIOCLIM_1, fill
 ggplot(combined[combined$y < 0, ], aes(x = RPD_significance, y = BIOCLIM_1, fill = RPD_significance)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \nRPD significance", x="RPD_significance", y = "Mean annual temperature") + ylim(quantile(combined$BIOCLIM_1, 0.025, na.rm = TRUE), quantile(combined$BIOCLIM_1, 0.975, na.rm = TRUE))
 
 # CANAPE is not so straightforward. Segregating by E-W or N-S hemisphere, or tropics vs. non-tropics, doesn't remove bimodality
-ggplot(combined[combined$x > 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
-ggplot(combined[combined$x < 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$x > -30 | combined_nod$x < -168, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$x < -30 & combined_nod$x > -168, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
 ggplot(combined[combined$y < 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
 ggplot(combined[combined$y < 0, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
 ggplot(combined[combined$y > 23.43629 | combined$y < -23.43629, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
 ggplot(combined[combined$y < 23.43629 && combined$y > -23.43629, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+
 
 
 ########################
@@ -230,7 +254,7 @@ library(ggplot2)
 ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
 ggplot(combined_nod, aes(x = BIOCLIM_12, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Precipitation vs.\nproportion nodulating", x="Annual precipitation", y = "Proportion nodulating")
 # Exclude 1 here, see 0-inflation in text
-ggplot(combined_nod, aes(x = BIOCLIM_17, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Precipitation of driest quarter vs.\nproportion nodulating", x="BIO17", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_7, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Temperature annual range vs.\nproportion nodulating", x="BIO7", y = "Proportion nodulating")
 ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Carbon vs.\nproportion nodulating", x="Carbon content", y = "Proportion nodulating")
 
 
@@ -241,13 +265,18 @@ ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent
 
 combined_nod$non_nod <- as.factor(ifelse(combined_nod$prop_nod < 1, "Present", "Absent"))
 # Aridity relationship not affected by hemisphere
-ggplot(combined_nod, aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nNorthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod, aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
 ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nNorthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
 ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$x > -30 | combined_nod$x < -168, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nWestern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+ggplot(combined_nod[combined_nod$x < -30 & combined_nod$x > -168, ], aes(x = non_nod, y = aridity_index_UNEP, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. presence of nodulators,\nEastern Hemisphere", x="Nodulator presence", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
+
 
 # Temperature is though
-ggplot(combined_nod, aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
-ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod, aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$y > 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nNorthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
 ggplot(combined_nod[combined_nod$y < 0, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nSouthern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$x > -30 | combined_nod$x < -168, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nWestern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
+ggplot(combined_nod[combined_nod$x < -30 & combined_nod$x > -168, ], aes(x = non_nod, y = BIOCLIM_1/10, fill = non_nod)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Mean annual temperature vs. \npresence of nodulators,\nEastern Hemisphere", x="Nodulator presence", y = "Mean annual temperature")
 
 
