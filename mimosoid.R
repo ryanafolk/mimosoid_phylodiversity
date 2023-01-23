@@ -251,10 +251,10 @@ r.squaredGLMM(mixed_model_simple)
 
 # BIO12 looks very similar to aridity, just show that in place of other precipitation variables
 library(ggplot2)
-ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
-ggplot(combined_nod, aes(x = BIOCLIM_12, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Precipitation vs.\nproportion nodulating", x="Annual precipitation", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = aridity_index_UNEP, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis", limits=c(0, 40)) + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Aridity vs.\nproportion nodulating", x="Aridity index", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_12, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis", limits=c(0, 32)) + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Precipitation vs.\nproportion nodulating", x="Annual precipitation", y = "Proportion nodulating")
 # Exclude 1 here, see 0-inflation in text
-ggplot(combined_nod, aes(x = BIOCLIM_7, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Temperature annual range vs.\nproportion nodulating", x="BIO7", y = "Proportion nodulating")
+ggplot(combined_nod, aes(x = BIOCLIM_7, y = prop_nod) ) + geom_hex(bins = 28) + scale_fill_continuous(type = "viridis", limits=c(0, 26)) + theme_bw() + ylim(0.5, 1) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Temperature annual range vs.\nproportion nodulating", x="BIO7", y = "Proportion nodulating")
 ggplot(combined_nod, aes(x = ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, y = prop_nod) ) + geom_hex(bins = 38) + scale_fill_continuous(type = "viridis") + theme_bw() + ylim(0.5, 0.99) + geom_smooth(method='lm', formula = y ~ x) + labs(title="Carbon vs.\nproportion nodulating", x="Carbon content", y = "Proportion nodulating")
 
 
