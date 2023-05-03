@@ -4,6 +4,7 @@
 
 library(dplyr)
 library(readr)
+
 # Load environmental data; starting with species richness to ensure as many pixels are recovered as possible
 env <- list.files(path="./environmental_data", pattern = "richness", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows 
 env <- data.frame(env)
@@ -54,7 +55,17 @@ SR$y <- round(SR$y, digit = 1)
 SR %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> SR
 SR <- as.data.frame(SR)
 
-combined <- merge(combined, SR, by = c("x", "y"))
+## Add regionalization
+clustering <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/mimosoidCluster.wgs84.csv")
+names(clustering) <- c("x", "y", "region")
+clustering$x <- round(clustering$x, digit = 1)
+clustering$y <- round(clustering$y, digit = 1)
+clustering %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> clustering
+clustering <- as.data.frame(clustering)
+clustering <- clustering[clustering$region > -1, ]
+clustering$region <- as.factor(clustering$region)
+
+combined <- merge(combined, clustering, by = c("x", "y"))
 
 # Normalize entire data frame
 combined.temp <- combined
@@ -63,87 +74,6 @@ combined.scaled$SR <- combined$SR
 combined.scaled <- as.data.frame(combined.scaled)
 combined.scaled$y <- combined.temp$y
 combined.scaled$x <- combined.temp$x
-
-
-########################
-# Model
-########################
-
-
-# RPD model
-linear_model_complex <- lm(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined.scaled)
-# Top 5 predictors by GLM normalized coefficient... note that nitrogen is a poorly performing predictor
-linear_model_simple <- lm(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined.scaled)
-library(lme4)
-mixed_model_complex <- lmer(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
-# Top 5 predictors by LMM normalized coefficient... note that nitrogen is a poorly performing predictor
-mixed_model_simple <- lmer(RPD ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
-mixed_model_noenvironment <- lmer(RPD ~ (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
-
-AIC(linear_model_complex)
-AIC(linear_model_simple)
-AIC(mixed_model_complex)
-AIC(mixed_model_simple)
-AIC(mixed_model_noenvironment)
-# Complex mixed model favored
-
-summary(mixed_model_complex)
-
-library(MuMIn)
-r.squaredGLMM(mixed_model_complex)
-
-
-## RPD significance model -- if included need to redo the simple model variable set
-#levels(combined.scaled$RPD_significance)[levels(combined.scaled$RPD_significance)=="NS"] <- NA # NS excluded by the metrics
-## Top 5 variables in simple models chosen based on coefficients in complex logit model
-#logit_complex <- glm(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, family = binomial(link='logit'), data = combined.scaled)
-#logit_simple <- glm(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced, family = binomial(link='logit'), data = combined.scaled)
-## Be warned, these logit models will take about 5 minutes and 2.8 GB RAM.
-#mixed_model_complex <- glmer(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
-#mixed_model_simple <- glmer(RPD_significance ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
-#mixed_model_noenvironment <- glmer(RPD_significance ~ (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun = 2e5)))
-#
-#AIC(logit_complex)
-#AIC(logit_simple)
-#AIC(mixed_model_complex)
-#AIC(mixed_model_simple)
-#AIC(mixed_model_noenvironment)
-#
-## Mixed model complex favored
-#summary(mixed_model_complex)
-#
-#library(MuMIn)
-#r.squaredGLMM(mixed_model_complex)
-
-
-
-# CANAPE significance model
-combined.scaled$CANAPE_significant <- combined.scaled$CANAPE
-levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Neo"] <-"Sig"
-levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Mixed"] <-"Sig"
-levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Paleo"] <-"Sig"
-levels(combined.scaled$CANAPE_significant)
-# Reduce factor to 2 levels; otherwise glm guesses and does this silently
-# Top 5 variables in simple models chosen based on coefficients in complex logit model
-logit_complex <- glm(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, family = binomial(link='logit'), data = combined.scaled)
-logit_simple <- glm(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced, family = binomial(link='logit'), data = combined.scaled)
-# Be warned, these logit models will take about 5 minutes and 2.8 GB RAM.
-mixed_model_complex <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
-mixed_model_simple <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
-mixed_model_noenvironment <- glmer(CANAPE_significant ~ (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun = 2e5)))
-
-AIC(logit_complex)
-AIC(logit_simple)
-AIC(mixed_model_complex)
-AIC(mixed_model_simple)
-AIC(mixed_model_noenvironment)
-
-# Mixed model simple favored
-summary(mixed_model_simple)
-
-library(MuMIn)
-r.squaredGLMM(mixed_model_simple)
-
 
 
 ########################
@@ -194,6 +124,156 @@ ggplot(combined[combined$y > 23.43629 | combined$y < -23.43629, ], aes(x = CANAP
 ggplot(combined[combined$y < 23.43629 && combined$y > -23.43629, ], aes(x = CANAPE, y = aridity_index_UNEP, fill = CANAPE)) + geom_violin(trim=FALSE) + geom_boxplot(width=0.1, fill="white") + labs(title="Aridity vs. CANAPE significance", x="CANAPE significance", y = "UNEP aridity index") + ylim(quantile(combined$aridity_index_UNEP, 0.025, na.rm = TRUE), quantile(combined$aridity_index_UNEP, 0.975, na.rm = TRUE))
 
 
+########################
+# RPD model
+########################
+
+library(lme4)
+
+# Load environmental data; use RPD grid cells to ensure as many pixels are recovered as possible
+env <- list.files(path="./environmental_data", pattern = "RPD_20km", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows 
+env <- data.frame(env)
+env[env == -9999] <- NA
+env$x <- round(env$x, digit = 1)
+env$y <- round(env$y, digit = 1)
+env %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env
+env <- as.data.frame(env)
+
+combined <- merge(env, RPD, by = c("x", "y"))
+
+# Normalize entire data frame
+combined.temp <- combined
+combined.scaled <- rapply(combined.temp, scale, c("numeric","integer"), how="replace")
+combined.scaled$SR <- combined$SR
+combined.scaled <- as.data.frame(combined.scaled)
+combined.scaled$y <- combined.temp$y
+combined.scaled$x <- combined.temp$x
+
+
+# RPD model
+linear_model_complex <- lm(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined.scaled)
+# Top 5 predictors by GLM normalized coefficient... note that nitrogen is a poorly performing predictor
+linear_model_simple <- lm(RPD ~ aridity_index_UNEP + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_nitrogen_reduced, data = combined.scaled)
+library(lme4)
+mixed_model_complex <- lmer(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
+# Top 5 predictors by LMM normalized coefficient... note that nitrogen is a poorly performing predictor
+mixed_model_simple <- lmer(RPD ~ aridity_index_UNEP + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
+mixed_model_noenvironment <- lmer(RPD ~ (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
+
+AIC(linear_model_complex)
+AIC(linear_model_simple)
+AIC(mixed_model_complex)
+AIC(mixed_model_simple)
+AIC(mixed_model_noenvironment)
+# Complex mixed model favored
+
+summary(mixed_model_complex)
+
+library(MuMIn)
+r.squaredGLMM(mixed_model_complex)
+
+## Add phyloregionalization
+## Run below conditionally when investigating phyloregionalization; otherwise just use the combined object noted above.
+#combined <- merge(combined, clustering, by = c("x", "y"))
+#
+## Normalize entire data frame
+#combined.temp <- combined
+#combined.scaled <- rapply(combined.temp, scale, c("numeric","integer"), how="replace")
+#combined.scaled$SR <- combined$SR
+#combined.scaled <- as.data.frame(combined.scaled)
+#combined.scaled$y <- combined.temp$y
+#combined.scaled$x <- combined.temp$x
+#
+#mixed_model_complex <- lmer(RPD ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled[combined_nod.scaled$region != 0, ])
+#summary(mixed_model_complex)
+#r.squaredGLMM(mixed_model_complex)
+#
+#library(sjPlot)
+#sjPlot::plot_model(mixed_model_complex, type = "re")
+
+########################
+# CANAPE significance model
+########################
+
+# Load environmental data; use RPD grid cells to ensure as many pixels are recovered as possible
+env <- list.files(path="./environmental_data", pattern = "CANAPE", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows 
+env <- data.frame(env)
+env[env == -9999] <- NA
+env$x <- round(env$x, digit = 1)
+env$y <- round(env$y, digit = 1)
+env %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env
+env <- as.data.frame(env)
+https://pbs.twimg.com/media/FuwnNYbWcAAtNTq?format=jpg&name=small
+combined <- merge(env, CANAPE, by = c("x", "y"))
+
+# Normalize entire data frame
+combined.temp <- combined
+combined.scaled <- rapply(combined.temp, scale, c("numeric","integer"), how="replace")
+combined.scaled$SR <- combined$SR
+combined.scaled <- as.data.frame(combined.scaled)
+combined.scaled$y <- combined.temp$y
+combined.scaled$x <- combined.temp$x
+
+
+combined.scaled$CANAPE_significant <- combined.scaled$CANAPE
+levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Neo"] <-"Sig"
+levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Mixed"] <-"Sig"
+levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Paleo"] <-"Sig"
+levels(combined.scaled$CANAPE_significant)
+
+# Reduce factor to 2 levels; otherwise glm guesses and does this silently
+# Top 5 variables in simple models chosen based on coefficients in complex logit model
+logit_complex <- glm(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, family = binomial(link='logit'), data = combined.scaled)
+logit_simple <- glm(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced, family = binomial(link='logit'), data = combined.scaled)
+# Be warned, these logit models will take about 5 minutes and 2.8 GB RAM.
+mixed_model_complex <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
+mixed_model_simple <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
+mixed_model_noenvironment <- glmer(CANAPE_significant ~ (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun = 2e5)))
+
+AIC(logit_complex)
+AIC(logit_simple)
+AIC(mixed_model_complex)
+AIC(mixed_model_simple)
+AIC(mixed_model_noenvironment)
+
+# Mixed model complex favored
+summary(mixed_model_complex)
+
+library(MuMIn)
+r.squaredGLMM(mixed_model_complex)
+
+
+## Run below conditionally when investigating phyloregionalization; otherwise just use the combined object noted above.
+#
+#combined <- merge(combined, clustering, by = c("x", "y"))
+#
+## Normalize entire data frame
+#combined.temp <- combined
+#combined.scaled <- rapply(combined.temp, scale, c("numeric","integer"), how="replace")
+#combined.scaled$SR <- combined$SR
+#combined.scaled <- as.data.frame(combined.scaled)
+#combined.scaled$y <- combined.temp$y
+#combined.scaled$x <- combined.temp$x
+#
+#combined.scaled$CANAPE_significant <- combined.scaled$CANAPE
+#levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Neo"] <-"Sig"
+#levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Mixed"] <-"Sig"
+#levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Paleo"] <-"Sig"
+#levels(combined.scaled$CANAPE_significant)
+#
+#
+## Add phyloregionalization
+#mixed_model_complex <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), family=binomial(link='logit'), na.action = na.omit, data = combined_nod.scaled[combined_nod.scaled$region != 0, ], control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
+#summary(mixed_model_complex)
+#r.squaredGLMM(mixed_model_complex)
+#
+#library(sjPlot)
+#sjPlot::plot_model(mixed_model_complex, type = "re")
+
+
+
+
+
 
 ########################
 # Add nodulation response
@@ -208,7 +288,47 @@ proportion_nodulating$y <- round(proportion_nodulating$y, digit = 1)
 proportion_nodulating %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> proportion_nodulating
 proportion_nodulating <- as.data.frame(proportion_nodulating)
 
-combined_nod <- merge(combined, proportion_nodulating, by = c("x", "y"))
+# Separately load environment matched to nodulation to ensure as many grid cells are captured as possible
+env_nod <- list.files(path="./environmental_data", pattern = "propNodulating", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows 
+env_nod <- data.frame(env_nod)
+env_nod[env_nod == -9999] <- NA
+env_nod$x <- round(env_nod$x, digit = 1)
+env_nod$y <- round(env_nod$y, digit = 1)
+env_nod %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env_nod
+env_nod <- as.data.frame(env_nod)
+
+combined_nod <- merge(proportion_nodulating, env_nod, by = c("x", "y"))
+
+
+########################
+# Nodule model
+########################
+
+linear_model_complex <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
+# Top 5 predictors by GLM normalized coefficient
+linear_model_simple <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
+library(lme4)
+mixed_model_complex <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+# Top 5 predictors by LMM normalized coefficient
+mixed_model_simple <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+
+mixed_model_noenvironment <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+
+AIC(linear_model_complex)
+AIC(linear_model_simple)
+AIC(mixed_model_complex)
+AIC(mixed_model_simple)
+AIC(mixed_model_noenvironment)
+# Complex mixed model favored
+
+summary(mixed_model_complex)
+
+library(MuMIn)
+r.squaredGLMM(mixed_model_complex)
+# First number is marginal (fixed effects only) and conditional (entire model)
+
+# Run below conditionally when investigating phyloregionalization; otherwise just use the combined object noted above.
+combined_nod <- merge(combined_nod, clustering, by = c("x", "y"))
 
 # Normalize entire data frame
 combined_nod.temp <- combined_nod
@@ -218,32 +338,15 @@ combined_nod.scaled <- as.data.frame(combined_nod.scaled)
 combined_nod.scaled$y <- combined_nod.temp$y
 combined_nod.scaled$x <- combined_nod.temp$x
 
-########################
-# Nodule model
-########################
 
-linear_model_complex <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-# Top 5 predictors by GLM normalized coefficient
-linear_model_simple <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced, data = combined_nod.scaled)
-library(lme4)
-mixed_model_complex <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
-# Top 5 predictors by LMM normalized coefficient
-mixed_model_simple <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+# Add phyloregionalization
+mixed_model_complex <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled[combined_nod.scaled$region != 0, ])
+summary(mixed_model_complex)
+r.squaredGLMM(mixed_model_complex)
 
-mixed_model_noenvironment <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+library(sjPlot)
+sjPlot::plot_model(mixed_model_complex, type = "re")
 
-AIC(linear_model_complex)
-AIC(linear_model_simple)
-AIC(mixed_model_complex)
-AIC(mixed_model_simple)
-AIC(mixed_model_noenvironment)
-# Simple mixed model favored
-
-summary(mixed_model_simple)
-
-library(MuMIn)
-r.squaredGLMM(mixed_model_simple)
-# First number is marginal (fixed effects only) and conditional (entire model)
 
 ########################
 # Nodulation plots
