@@ -203,7 +203,7 @@ env$x <- round(env$x, digit = 1)
 env$y <- round(env$y, digit = 1)
 env %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env
 env <- as.data.frame(env)
-https://pbs.twimg.com/media/FuwnNYbWcAAtNTq?format=jpg&name=small
+
 combined <- merge(env, CANAPE, by = c("x", "y"))
 
 # Normalize entire data frame
@@ -299,19 +299,31 @@ env_nod <- as.data.frame(env_nod)
 
 combined_nod <- merge(proportion_nodulating, env_nod, by = c("x", "y"))
 
+## Run below conditionally when investigating phyloregionalization; otherwise just use the combined object noted above.
+#combined_nod <- merge(combined_nod, clustering, by = c("x", "y"))
+
+# Normalize entire data frame
+combined_nod.temp <- combined_nod
+combined_nod.scaled <- rapply(combined_nod.temp, scale, c("numeric","integer"), how="replace")
+combined_nod.scaled$SR <- combined_nod$SR
+combined_nod.scaled <- as.data.frame(combined_nod.scaled)
+combined_nod.scaled$y <- combined_nod.temp$y
+combined_nod.scaled$x <- combined_nod.temp$x
+combined_nod.scaled$prop_nod <- combined_nod.temp$prop_nod # do not normalize response
 
 ########################
 # Nodule model
 ########################
 
-linear_model_complex <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
+library(glmmTMB)
+linear_model_complex <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
 # Top 5 predictors by GLM normalized coefficient
-linear_model_simple <- lm(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-library(lme4)
-mixed_model_complex <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
+linear_model_simple <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
+# Warning -- models with the random effects take about 15 minutes to run
+mixed_model_complex <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
 # Top 5 predictors by LMM normalized coefficient
-mixed_model_simple <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
-
+mixed_model_simple <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
+# Top 3 predictors by LMM normalized coefficient
 mixed_model_noenvironment <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
 
 AIC(linear_model_complex)
@@ -323,29 +335,23 @@ AIC(mixed_model_noenvironment)
 
 summary(mixed_model_complex)
 
-library(MuMIn)
-r.squaredGLMM(mixed_model_complex)
+library(performance)
+r2(mixed_model_complex)
 # First number is marginal (fixed effects only) and conditional (entire model)
 
-# Run below conditionally when investigating phyloregionalization; otherwise just use the combined object noted above.
-combined_nod <- merge(combined_nod, clustering, by = c("x", "y"))
 
-# Normalize entire data frame
-combined_nod.temp <- combined_nod
-combined_nod.scaled <- rapply(combined_nod.temp, scale, c("numeric","integer"), how="replace")
-combined_nod.scaled$SR <- combined_nod$SR
-combined_nod.scaled <- as.data.frame(combined_nod.scaled)
-combined_nod.scaled$y <- combined_nod.temp$y
-combined_nod.scaled$x <- combined_nod.temp$x
 
 
 # Add phyloregionalization
-mixed_model_complex <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled[combined_nod.scaled$region != 0, ])
-summary(mixed_model_complex)
-r.squaredGLMM(mixed_model_complex)
+mixed_model_complex_regionalization <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled[combined_nod.scaled$region != 0, ])
+#summary(mixed_model_complex_regionalization)
+#r.squaredGLMM(mixed_model_complex_regionalization)
+
+combined_nod.scaled <- merge(combined_nod.scaled, clustering, by = c("x", "y"))
+mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
 
 library(sjPlot)
-sjPlot::plot_model(mixed_model_complex, type = "re")
+sjPlot::plot_model(mixed_model_complex_regionalization, type = "re")
 
 
 ########################
