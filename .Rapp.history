@@ -1,493 +1,71 @@
+median(5,6,7)
+median
+median(c(5,6,7))
+median(c(5,6))
+median(c(5.5,7))
 library(dplyr)#
-library(readr)
-library(lme4)
-library(dplyr)#
-library(readr)
-mixed_model_complex <- glmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=binomial(link='logit'))
-combined_nod.scaled$prop_nod <- combined_nod.temp$prop_nod # response should not be normalized in this instance
-mixed_model_complex <- glmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=binomial(link='logit'))
-summary(mixed_model_complex)
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5)))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
-mixed_model_complex <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
-# Load environmental data; use RPD grid cells to ensure as many pixels are recovered as possible#
-env <- list.files(path="./environmental_data", pattern = "CANAPE", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows #
+library(readr)#
+#
+# Load environmental data; starting with species richness to ensure as many pixels are recovered as possible#
+env <- list.files(path="./environmental_data", pattern = "richness", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows #
 env <- data.frame(env)#
 env[env == -9999] <- NA#
 env$x <- round(env$x, digit = 1)#
 env$y <- round(env$y, digit = 1)#
 env %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env#
-env <- as.data.frame(env)#
+env <- as.data.frame(env)
+proportion_nodulating <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/propNodulating_20km.csv")#
+proportion_nodulating$richness <- NULL#
+names(proportion_nodulating) <- c("x", "y", "prop_nod")#
+proportion_nodulating$x <- round(proportion_nodulating$x, digit = 1)#
+proportion_nodulating$y <- round(proportion_nodulating$y, digit = 1)#
+proportion_nodulating %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> proportion_nodulating#
+proportion_nodulating <- as.data.frame(proportion_nodulating)
+# Separately load environment matched to nodulation to ensure as many grid cells are captured as possible#
+env_nod <- list.files(path="./environmental_data", pattern = "propNodulating", full.names = TRUE) %>% lapply(read_csv) %>% bind_rows #
+env_nod <- data.frame(env_nod)#
+env_nod[env_nod == -9999] <- NA#
+env_nod$x <- round(env_nod$x, digit = 1)#
+env_nod$y <- round(env_nod$y, digit = 1)#
+env_nod %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> env_nod#
+env_nod <- as.data.frame(env_nod)
+combined_nod <- merge(proportion_nodulating, env_nod, by = c("x", "y"))#
 #
-combined <- merge(env, CANAPE, by = c("x", "y"))#
+## Run below conditionally when investigating phyloregionalization; otherwise just use the combined object noted above.#
+#combined_nod <- merge(combined_nod, clustering, by = c("x", "y"))#
 #
 # Normalize entire data frame#
-combined.temp <- combined#
-combined.scaled <- rapply(combined.temp, scale, c("numeric","integer"), how="replace")#
-combined.scaled$SR <- combined$SR#
-combined.scaled <- as.data.frame(combined.scaled)#
-combined.scaled$y <- combined.temp$y#
-combined.scaled$x <- combined.temp$x#
-combined.scaled$CANAPE_significant <- combined.scaled$CANAPE#
-levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Neo"] <-"Sig"#
-levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Mixed"] <-"Sig"#
-levels(combined.scaled$CANAPE_significant)[levels(combined.scaled$CANAPE_significant)=="Paleo"] <-"Sig"#
-levels(combined.scaled$CANAPE_significant)
-mixed_model_complex <- glmer(CANAPE_significant ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), family=binomial(link='logit'), na.action = na.omit, data = combined.scaled, control = glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun = 2e5))) # Stronger likelihood search options per warnings + documentation
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), start = list(psi = c(-1, 1)))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS"), optCtrl=list(iter.max=1e3,eval.max=1e3)))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start_method = list(method = NULL, jitter.sd = 1),)
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start_method = list(method = NULL, jitter.sd = 0))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), profile=quote(length(parameters$beta)>=5))
-glmmTMBControl(profile=quote(length(parameters$beta)>=5))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="L-BFGS-B")))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start = ())
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start_method = list(method = "res", jitter.sd = 0.1),)
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start_method = list(method = "res", jitter.sd = 0.1))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-write.csv(combined_nod.scaled, "combined_nod.scaled.csv")
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP, na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"))
-mixed_model_complex <- glmmTMB(prop_nod ~ x, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), map = list(theta = factor(NA)))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start = list(theta = log(theta_value)))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start = list(theta = log(1e3)))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start = list(theta = ()))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start = list(theta = ()), map = list(theta = factor(NA)))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start = list(theta = (log(1e3))), map = list(theta = factor(NA)))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")), start = list(theta = (log(1e3))), map = list(theta = factor(NA)))
-mixed_model_complex <- simulate(glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS"))))
-mixed_model_complex <- simulate(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- peakRAM(glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS"))))
-install.packages("peakRAM")
-libarary(peakRAM)
-libarary(peakRAM)#
-library(peakRAM)
-mixed_model_complex <- peakRAM(glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS"))))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ prop_nod*10, na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ log(prop_nod), na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ log(prop_nod + 1), na.action = na.omit, data = combined_nod, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ log(prop_nod), na.action = na.omit, data = head(combined_nod), family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ log(prop_nod), na.action = na.omit, data = head(combined_nod, n = 10000), family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = head(combined_nod, n = 10000), family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = head(combined_nod, n = 1000), family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ y, na.action = na.omit, data = head(combined_nod, n = 10000), family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-min(combined_nod.scaled$prop_nod)
-max(combined_nod.scaled$prop_nod)
-sum(is.na(combined_nod.scaled$prop_nod))
-density(combined_nod.scaled$prop_nod))
-density(combined_nod.scaled$prop_nod)
-plot(density(combined_nod.scaled$prop_nod))
-plot(density(combined_nod.scaled$prop_nod))
-length(combined_nod.scaled$prop_nod)
-mixed_model_complex <-lmer((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
-summary(mixed_model_complex)
-coeff(mixed_model_complex)
-coef(mixed_model_complex)
-head(coef(mixed_model_complex))
-head(coef(mixed_model_complex)[0])
-head(coef(mixed_model_complex)[1])
-summary(mixed_model_complex)
-density(prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod))
-density(combined_nod.scaled$prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod))
-density(combined_nod.scaled$prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod)))
-density(combined_nod.scaled$prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod))
-density(combined_nod.scaled$prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod)
-density(combined_nod.scaled$prop_nod)
-plot(density(combined_nod.scaled$prop_nod))
-length(combined_nod.scaled$prop_nod)-1
-plot(density(()(combined_nod.scaled$prop_nod*146769)+0.5)/146769))
-plot(density((combined_nod.scaled$prop_nod*146769)+0.5)/146769))
-plot(density(((combined_nod.scaled$prop_nod*146769)+0.5)/146769))
-plot(density(((combined_nod.scaled$prop_nod*146769)+0.5)/146769))
-((combined_nod.scaled$prop_nod*146769)+0.5)/146769
-mixed_model_complex <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-summary(mixed_model_complex)
-mixed_model_simple <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-linear_model_complex <- lm((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled, family=list(family="beta",link="logit"))
-linear_model_complex <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-summary(linear_model_complex)
-linear_model_simple <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_noenvironment <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(linear_model_complex)#
-AIC(linear_model_simple)#
-AIC(mixed_model_complex)#
-AIC(mixed_model_simple)#
-AIC(mixed_model_noenvironment)
-min(AIC(linear_model_complex), AIC(linear_model_simple), AIC(mixed_model_complex),AIC(mixed_model_simple),AIC(mixed_model_noenvironment))
-mixed_model_simplest <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(linear_model_complex)#
-AIC(linear_model_simple)#
-AIC(mixed_model_complex)#
-AIC(mixed_model_simple)#
-AIC(mixed_model_simplest)#
-AIC(mixed_model_noenvironment)
-mixed_model_noenvironmentlatitude <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ (1 | y), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_noenvironmentlatitude)
-mixed_2 <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined.scaled)
-mixed_2 <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
-AIC(mixed_2)
-library(betareg)
-install.packages(library(betareg))
-install.packages("betareg")
-library(betareg)
-linear_model_complex <- betareg((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled)
-linear_model_complex <- betareg((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-length(combined_nod.scaled$prop_nod)
-linear_model_complex <- betareg((prop_nod*146770-1)+0.5)/146770) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg(((prop_nod*146770-1)+0.5)/146770) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg(((prop_nod*146770-1)+0.5)/146770) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg((prop_nod*146770-1)+0.5)/146770 ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg(((prop_nod*146770-1)+0.5)/146770 ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg(((prop_nod*146770-1)+0.5)/146770) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg((prop_nod*146770-1)+0.5)/146770) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, data = combined_nod.scaled)
-linear_model_complex <- betareg((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled)
-mixed_model_noenvironment <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
-AIC(mixed_model_noenvironment)
-AIC(linear_model_complex)#
-AIC(linear_model_simple)#
-AIC(mixed_model_complex)#
-AIC(mixed_model_simple)#
-AIC(mixed_model_noenvironment)
-summary(mixed_model_complex)
-library(MuMIn)#
-r.squaredGLMM(mixed_model_complex)
-r.squaredGLMM(mixed_model_complex, link="logit")
-r.squaredGLMM(mixed_model_complex, family=list(family="beta",link="logit"))
-rsqglmm(mixed_model_complex, family=list(family="beta",link="logit"))
-rsqglmm(mixed_model_complex, family=list(family="beta",link="logit"))
-r.squaredGLMM(mixed_model_complex, family=list(family="beta",link="logit"))
-r2(mixed_model_complex, family=list(family="beta",link="logit"))
-library(performance)
-r2(mixed_model_complex, family=list(family="beta",link="logit"))
-r2(mixed_model_complex)
-mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-combined_nod.scaled <- merge(combined_nod.scaled, clustering, by = c("x", "y"))
-mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-library(sjPlot)#
-sjPlot::plot_model(mixed_model_complex_regionalization, type = "re")
-library(sjPlot)#
-sjPlot::plot_model(mixed_model_complex_regionalization, type = "re")
-r.squaredGLMM(mixed_model_complex)
-mixed_model_complex <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-r.squaredGLMM(mixed_model_complex)
-r2(mixed_model_complex)
-VarCorr(mixed_model_complex)[[1]]
-VarCorr(mixed_model_complex)
-fixef(mixed_model_complex)$cond
-r.squaredGLMM(mixed_model_complex)
-X <- model.matrix(mixed_model_complex)
-n <- nrow(X)
-Beta <- fixef(mixed_model_complex)
-Sf <- var(X %*% Beta)
-fixef(mixed_model_complex)
-Sf <- var(X %*% Beta)
-fixef(mixed_model_complex)$cond
-Beta <- fixef(mixed_model_complex)$cond
-Sf <- var(X %*% Beta)
-Sigma.list <- VarCorr(mod_ref)
-Sigma.list <- VarCorr(mod_ref)$cond
-Sigma.list <- VarCorr(mixed_model_complex)
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sl <- 0
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sl <- 1
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-X <- model.matrix(mixed_model_complex)#
-n <- nrow(X)#
-Beta <- fixef(mixed_model_complex)$cond
-Sf <- var(X %*% Beta)
-Sigma.list <- VarCorr(mixed_model_complex)
-Sl <- 1#
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sl <- 1#
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-diag(Z %*% Sigma %*% t(Z))
-diag(Z %*% Sigma %*% t(Z))
-Sigma.list <- VarCorr(mixed_model_complex)$cond
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sigma.list <- VarCorr(mixed_model_complex)$cond
-diag(Z %*% Sigma %*% t(Z))
-diag(Z %*% Sigma.list %*% t(Z))
-diag(Z %*% Sigma %*% t(Z))Z <-X[,rownames(Sigma)]
-Z <-X[,rownames(Sigma)]
-Z <-X[,rownames(Sigma.list)]
-diag(Z %*% Sigma %*% t(Z))Z <-X[,rownames(Sigma)]
-diag(Z %*% Sigma.list %*% t(Z))Z <-X[,rownames(Sigma)]
-diag(Z %*% Sigma.list %*% t(Z))
-diag(Z %*% Sigma %*% t(Z))
-diag(Z %*% Sigma.list %*% t(Z))sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))
-sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Sl <- 0#
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-rm(Sl)
-Sl <- 0#
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-r2(mixed_model_complex)
-X <- model.matrix(mixed_model_complex)#
-n <- nrow(X)#
-Beta <- fixef(mixed_model_complex)$cond#
-Sf <- var(X %*% Beta)#
-Sigma.list <- VarCorr(mixed_model_complex)$cond#
-Sl <- #
-sum(#
-  sapply(Sigma.list,#
-    function(Sigma)#
-    {#
-      Z <-X[,rownames(Sigma)]#
-      sum(diag(Z %*% Sigma %*% t(Z)))/n#
-    }))#
-  Se <- attr(Sigma.list, "sc")^2#
-  Sd <- 0#
-  total.var <- Sf + Sl + Se + Sd#
-  (Rsq.m <- Sf / total.var) #
-  (Rsq.c <- (Sf + Sl) / total.var)
-Rsq.m
-tab_model(mixed_model_complex)
-tab_model(mixed_model_complex, file = "asdf.doc")
-env_nod$x <- round(env_nod$x, digit = 0)#
-env_nod$y <- round(env_nod$y, digit = 0)
-combined_nod.scaled$y <- combined_nod.temp$y#
-combined_nod.scaled$x <- combined_nod.temp$x
-combined_nod.scaled$y <- round(combined_nod.temp$y, digit = 1)#
-combined_nod.scaled$x <- round(combined_nod.temp$x, digit = 1)
-length(round(combined_nod.temp$x, digit = 0))
-length(combined_nod.temp$x)
-combined_nod.scaled$y <- round(combined_nod.temp$y, digit = 0)
-combined_nod <- merge(proportion_nodulating, env_nod, by = c("x", "y"))
 combined_nod.temp <- combined_nod#
 combined_nod.scaled <- rapply(combined_nod.temp, scale, c("numeric","integer"), how="replace")#
 combined_nod.scaled$SR <- combined_nod$SR#
 combined_nod.scaled <- as.data.frame(combined_nod.scaled)#
-combined_nod.scaled$y <- round(combined_nod.temp$y, digit = 0)#
-combined_nod.scaled$x <- round(combined_nod.temp$x, digit = 0)
-combined_nod.scaled$prop_nod <- combined_nod.temp$prop_nod # do not normalize response
-mixed_model_complex <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-combined_nod.scaled$x
-mixed_model_complex <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_complex)
-r2(mixed_model_complex)
-mixed_model_simple <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-mixed_model_complex <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-r2(mixed_model_complex)
-mixed_model_complex <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-r2(mixed_model_complex)
-env_nod$x <- round(env_nod$x/5, digit = 1)*5#
-env_nod$y <- round(env_nod$y/5, digit = 1)*5
-mixed_model_complex <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-r2(mixed_model_complex)
-combined_nod.scaled$y <- round(combined_nod.temp$y/5, digit = 0)*5  # Coarser spatial resolution based on evidence of overfitting due to bad behavior of model summary stats#
-combined_nod.scaled$x <- round(combined_nod.temp$x/5, digit = 0)*5
-mixed_model_complex <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-r2(mixed_model_complex)
 combined_nod.scaled$y <- round(combined_nod.temp$y, digit = 0)  # Coarser spatial resolution based on evidence of overfitting due to bad behavior of model summary stats#
-combined_nod.scaled$x <- round(combined_nod.temp$x, digit = 0)
-mixed_model_noenvironment <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_noenvironment)
-mixed_model_complex <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_complex)
-summary(mixed_model_complex)
-summary(mixed_model_noenvironment)
-linear_model_complex <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))#
-# Top 5 predictors by GLM normalized coefficient#
-linear_model_simple <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced, na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))#
-# Warning -- models with the random effects take about 15 minutes to run#
-mixed_model_complex <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))#
-# Top 5 predictors by LMM normalized coefficient#
-mixed_model_simple <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))#
-# Top 3 predictors by LMM normalized coefficient#
-mixed_model_noenvironment <- lmer(prop_nod ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled)
-AIC(linear_model_complex)#
-AIC(linear_model_simple)#
-AIC(mixed_model_complex)#
-AIC(mixed_model_simple)#
-AIC(mixed_model_noenvironment)
-mixed_model_noenvironment2 <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_noenvironment2)
-summary(mixed_model_simple)
-mixed_model_simple2 <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + (1 | y) + (1 | x), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_simple2)
-AIC(mixed_model_simple2)#
-ixed_model_noenvironment3 <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ (1 | y), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_simple2)#
-ixed_model_noenvironment3 <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ (1 | y), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))#
-AIC(ixed_model_noenvironment3)
-mixed_model_simple3 <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
-AIC(mixed_model_simple3)
-AIC(mixed_model_simple3)
-r2(mixed_model_simple)
+combined_nod.scaled$x <- round(combined_nod.temp$x, digit = 0)#
+combined_nod.scaled$prop_nod <- combined_nod.temp$prop_nod # do not normalize response
+# Add phyloregionalization#
+mixed_model_complex_regionalization <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled[combined_nod.scaled$region != 0, ])#
+#summary(mixed_model_complex_regionalization)#
+#r.squaredGLMM(mixed_model_complex_regionalization)#
+#
+combined_nod.scaled <- merge(combined_nod.scaled, clustering, by = c("x", "y"))#
+mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))#
+#
+library(sjPlot)#
+sjPlot::plot_model(mixed_model_complex_regionalization, type = "re")
+combined_nod.scaled <- merge(combined_nod.scaled, clustering, by = c("x", "y"))
+## Add regionalization#
+clustering <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/mimosoidCluster.wgs84.csv")#
+names(clustering) <- c("x", "y", "region")#
+clustering$x <- round(clustering$x, digit = 1)#
+clustering$y <- round(clustering$y, digit = 1)#
+clustering %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> clustering#
+clustering <- as.data.frame(clustering)#
+clustering <- clustering[clustering$region > -1, ]#
+clustering$region <- as.factor(clustering$region)
+combined_nod.scaled <- merge(combined_nod.scaled, clustering, by = c("x", "y"))
+head(combined_nod.scaled)
+mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
+library(glmmTMB)
+mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
+library(sjPlot)#
+sjPlot::plot_model(mixed_model_complex_regionalization, type = "re")

@@ -55,6 +55,8 @@ SR$y <- round(SR$y, digit = 1)
 SR %>% group_by(x, y) %>% summarize_if(is.numeric, mean, na.rm = TRUE) -> SR
 SR <- as.data.frame(SR)
 
+combined <- merge(combined, SR, by = c("x", "y"))
+
 ## Add regionalization
 clustering <- read.csv("./Mimosoid_CSVs_ToShare_WGS84/mimosoidCluster.wgs84.csv")
 names(clustering) <- c("x", "y", "region")
@@ -339,12 +341,8 @@ summary(mixed_model_simple)
 
 
 # Add phyloregionalization
-mixed_model_complex_regionalization <- lmer(prop_nod ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled[combined_nod.scaled$region != 0, ])
-#summary(mixed_model_complex_regionalization)
-#r.squaredGLMM(mixed_model_complex_regionalization)
-
 combined_nod.scaled <- merge(combined_nod.scaled, clustering, by = c("x", "y"))
-mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(combined_nod.scaled$prop_nod)-1)+0.5)/length(combined_nod.scaled$prop_nod) ~ aridity_index_UNEP + BIOCLIM_1 + BIOCLIM_12 + BIOCLIM_7 + BIOCLIM_17 + ISRICSOILGRIDS_new_average_nitrogen_reduced + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family=list(family="beta",link="logit"), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
+mixed_model_complex_regionalization <- glmmTMB((prop_nod*(length(prop_nod)-1)+0.5)/length(prop_nod) ~ aridity_index_UNEP + BIOCLIM_12 + BIOCLIM_7 + ISRICSOILGRIDS_new_average_phx10percent_reduced + ISRICSOILGRIDS_new_average_soilorganiccarboncontent_reduced + (1 | y) + (1 | x) + (1 | region), na.action = na.omit, data = combined_nod.scaled, family = beta_family(), control=glmmTMBControl(optimizer=optim,optArgs=list(method="BFGS")))
 
 library(sjPlot)
 sjPlot::plot_model(mixed_model_complex_regionalization, type = "re")
