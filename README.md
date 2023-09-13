@@ -1,3 +1,4 @@
+[![DOI](https://sandbox.zenodo.org/badge/539571511.svg)](https://sandbox.zenodo.org/badge/latestdoi/539571511)
 # mimosoid_phylodiversity
 Data and analyses for the manuscript entitled, "Phylogenetic diversity and regionalization of root nodule symbiosis." The contents are as follows, summarized by directory structure: 
 
